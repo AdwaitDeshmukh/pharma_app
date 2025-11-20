@@ -1,0 +1,138 @@
+Here is a **simple and clean README.md text** you can put in your project.
+
+You can copy-paste directly into a `README.md` file inside your `pharma_app` folder.
+
+---
+
+# 📄 **README.md (Easy Instructions)**
+
+```
+# Pharma App - Development Guide
+
+This guide explains how to use the project during development.
+
+---
+
+## 1️⃣ Activate Virtual Environment (IMPORTANT)
+
+Before working on this project, always activate the virtual environment.
+
+### Command (Windows):
+```
+
+venv\Scripts\activate
+
+```
+
+You should see:
+```
+
+(venv) E:\Live_Project_Prabha_Agency\pharma_app>
+
+```
+
+If you see (venv), it means the environment is active.
+
+---
+
+## 2️⃣ Run the Flask App
+
+After activating venv, run the project:
+
+```
+
+python app.py
+
+```
+
+The app will start at:
+```
+
+[http://localhost:5000/](http://localhost:5000/)
+
+```
+
+---
+
+## 3️⃣ Install Python Packages
+
+After adding new libraries, install them inside the venv:
+
+```
+
+pip install package_name
+
+```
+
+Then update requirements.txt:
+
+```
+
+pip freeze > requirements.txt
+
+```
+
+---
+
+## 4️⃣ Git Commands (Version Control)
+
+### 🔹 Add all updated files:
+```
+
+git add .
+
+```
+
+### 🔹 Commit changes:
+```
+
+git commit -m "Your message here"
+
+```
+
+### 🔹 Push to GitHub:
+```
+
+git push
+
+```
+
+---
+
+## 5️⃣ Deactivate venv (Optional)
+
+When you finish working:
+```
+
+deactivate
+
+```
+
+---
+
+## 6️⃣ Project Structure
+```
+
+pharma_app/
+│
+├── app.py
+├── requirements.txt
+├── mydb.sqlite
+├── venv/
+├── static/
+├── templates/
+└── utils/
+
+```
+
+---
+
+## 7️⃣ Notes
+- Always activate venv before running the project.
+- Never edit files inside the venv folder.
+- Use git regularly to save progress.
+```
+
+---
+
+
