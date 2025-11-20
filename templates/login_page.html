@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="static/global.css" />
+    <link rel="stylesheet" href="static/style.css" />
+    <title>PharmaCompany Login</title>
+  </head>
+  <body>
+    <main class="login-page">
+      <div class="login-container">
+        <div class="login-content">
+          <img class="login-image" src="{{ url_for('static', filename='images/login_page_image.png') }}" />
+          <div class="login-form-container">
+            <h1 class="company-name">PharmaCompany</h1>
+            <h2 class="login-heading">Login</h2>
+            <form class="login-form" action="/login_validation" method="post">
+              <div class="form-group">
+                <label for="email" class="form-label">Username</label>
+                <input type="text" id="email" name="username" class="form-input" placeholder="Enter Username" required />
+              </div>
+              <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  class="form-input"
+                  placeholder="Enter password"
+                  required
+                />
+              </div>
+              <button type="submit" class="login-button">Login</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
