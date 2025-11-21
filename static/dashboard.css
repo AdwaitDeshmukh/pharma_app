@@ -1,0 +1,122 @@
+* {
+    margin: 0px;
+    padding: 0px;
+}
+
+body {
+    background-color: #edfcff;
+}
+.topbanner {
+    display: flex;
+    height: 250px;
+    margin: 40px 20px 30px 20px;
+    background-color: #30bddc;
+    border: 1px solid black;;
+    border-radius: 25px;
+    padding: 20px;
+    overflow: auto;
+}
+
+.tpbtext {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center;    
+    flex: 1; 
+}
+
+#yearbox {
+    display: flex;
+    height: 40px;
+    width: 120px;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    font-family: "Poppins-Regular", Helvetica;
+    border: 1px solid black;
+    border-radius: 15px;
+    background-color: #ffffff;
+}
+
+#welcometxt {
+    font-family: "Poppins-Bold", Helvetica;
+    font-weight: 700;
+    color: #ffffff;
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+#subtext {
+    width: 400px;
+    font-family: "Poppins-Regular", Helvetica;
+    font-weight: 400;
+    color: #ffffff;
+    font-size: 24px;
+    text-align: center;
+}
+
+.btnbanner {
+    display: flex;
+    flex-direction: row;
+    height: 250px;
+    margin: 30px 20px 40px 20px;
+    border: 2px solid #edfcff;;
+    border-radius: 25px;
+    padding: 20px;
+    overflow: auto;
+
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.btnbox {
+    display: flex;
+    flex-direction: column;
+    height: 180px;
+    width: 180px;
+    border: 2px solid white;
+    border-radius: 30px;
+    padding: 10px;
+    background-color: #30bddc;
+    justify-content: start; 
+    align-items: start; 
+    align-content: center;
+    text-decoration: none;
+}
+
+.btn-icon {
+    height: 36px;
+    width: 36px;
+    padding: 5px;
+    border-radius: 50px;
+    overflow: visible;
+}
+
+.icon {
+    display: flex;
+    height: 52px;
+    width: 52px;
+    border: 2px solid black;
+    border-radius: 50px;
+    background-color: #ffffff;
+    align-self: self-end;
+    justify-content: center;
+    align-items: center;
+}
+
+.btnmaintxt {
+    font-family: "Poppins-Bold", Helvetica;
+    font-weight: 700;
+    color: black;
+    font-size: 28px;
+    line-height: normal;
+    margin-top: 20px;
+}
+
+.btnsubtxt {
+    font-family: "Poppins-Regular", Helvetica;
+    font-weight: 400;
+    color: #000000;
+    font-size: 22px;
+    margin-top: 10px;
+}

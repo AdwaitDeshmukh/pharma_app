@@ -1,5 +1,7 @@
 from flask import Flask, request, redirect, render_template
 from utils.db import init_db, get_db
+from datetime import datetime
+
 
 app = Flask(__name__)
 
@@ -14,7 +16,7 @@ def home():
 def login_validation():
     username = request.form.get("username")
     password = request.form.get("password")
-
+    
     conn = get_db()
     cursor = conn.cursor()
 
@@ -25,9 +27,13 @@ def login_validation():
     ).fetchone()
 
     if user:
-        return "LOGIN SUCCESSFUL!"
+        return render_template("dashboard.html")
     else:
         return redirect("/")
+    
+@app.route("/master-entry")
+def master_entry():
+    return render_template("master-entry.html")
 
 if __name__ == "__main__":
     app.run(debug=True)

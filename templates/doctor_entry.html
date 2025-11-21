@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Entry</title>
+    <link rel="stylesheet" href="static/doctor_entry.css">
+</head>
+
+<body>
+    <header class="header">
+        <a href="{{ url_for('main.master_entry') }}" class="back-btn" aria-label="Go back">
+            <img src="static/Images/Batch_Entry/back_btn.png" alt="Back">
+        </a>
+    </header>
+
+    <div class="container">
+        <div class="btn-holder">
+            <button type="button" class="btns new-doctor-btn" id="new-doctor-btn">New Doctor</button>
+        </div>
+        <div class="data-table">
+            <h3 id="table-heading">Existing Doctors:</h3>
+            <table border="1" class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Doctor Name</th>
+                        <th>Locality</th>
+                        <th>Medicals</th>
+                        <th>Visibility</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="values">
+                    {% for row in data %}
+                    <tr data-id="{{ row.id }}">
+                        <td>{{ row.id }}</td>
+                        <td class="doctor-name">{{ row.doctor_name }}</td>
+                        <td class="locality">{{ row.locality }}</td>
+                        <td class="medicals">
+                            {% for medical in row.medicals %}
+                            {{ medical.medicalName }}{% if not loop.last %}, {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td class="visibility">{{ "Yes" if row.visibility else "No" }}</td>
+                        <td>
+                            <button class="btns btn-sm btn-info edit-btn" data-id="{{ row.id }}">Update</button>
+                            <button class="btns btn-sm btn-danger del-btn" data-id="{{ row.id }}">Delete</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="doctor-form-modal modal" id="doctor_modal">
+        <div class="data-form">
+            <div class="form-header">
+                <div class="header-text" id="modal-title">Add New Doctor</div>
+                <button class="close-btn" id="closeModal">×</button>
+            </div>
+
+            <form method="post" id="doctorForm">
+                <input type="hidden" id="doctor-id" name="id">
+                <label>Doctor Name:</label>
+                <input type="text" name="doctor_name" id="doctor-name" class="doctor-input" required>
+
+                <label for="locality">Locality</label>
+                <input type="text" id="locality" name="locality" required>
+
+                <label>Medicals:</label>
+                <div class="dropdown" id="medical-dropdown">
+                    <div class="dropdown-btn" id="medical-btn" onclick="toggleDropdown('medical-dropdown')">
+                        Select Medicals
+                    </div>
+                    <div class="dropdown-content">
+                        {% for owner in owners %}
+                        <label>
+                            <input type="checkbox" name="medicals" value="{{ owner.id }}">
+                            {{ owner.medicalName }}
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <label for="visi">Visibility</label>
+                <input type="checkbox" id="visi" name="visibility">
+
+                <div class="form-actions">
+                    <button type="submit" id="saveBtn" class="btns save-btn">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="static/JS/doctor_entry.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Entry</title>
+    <link rel="stylesheet" href="static/medical_entry.css">
+</head>
+
+<body>
+    <header class="header">
+        <a href="{{ url_for('main.master_entry') }}" class="back-btn" aria-label="Go back">
+            <img src="static/Images/Batch_Entry/back_btn.png" alt="Back">
+        </a>
+    </header>
+
+    <div class="container">
+        <div class="btn-holder">
+            <button type="button" class="btns new-medical-btn" id="new-btn">New Medical</button>
+        </div>
+        <div class="data-table">
+            <h3 id="table-heading">Existing Medicals:</h3>
+            <table border="1" class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Locality</th>
+                        <th>Visibility</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="values">
+                    {% for row in data %}
+                    <tr data-id="{{ row.id }}">
+                        <td>{{ row.id }}</td>
+                        <td class="medicalName">{{ row.medicalName }}</td>
+                        <td class="locality">{{ row.locality }}</td>
+                        <td class="visibility">{{ row.visibility }}</td>
+                        <td>
+                            <button class="btns btn-sm btn-info edit-btn">Update</button>
+                            <button class="btns btn-sm btn-danger del-btn">Delete</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- New Medical Form Modal -->
+    <div class="medical-form-modal modal" id="new_modal">
+        <div class="data-form">
+            <div class="form-header">
+                <div class="header-text" id="modal-title">Add New Medical</div>
+                <button class="close-btn" id="closeModal">×</button>
+            </div>
+
+            <form id="medicalForm" class="batch-form">
+
+                <label for="medicalName">Name</label>
+                <input type="text" id="medicalName" name="medicalName" required>
+
+                <label for="locality">Locality</label>
+                <input type="text" id="locality" name="locality" required>
+
+                <label for="visibility">Visibility</label>
+                <input type="checkbox" class="visis" id="visi" name="visibility">
+
+                <div class="form-actions">
+                    <button type="submit" id="saveBtn" class="btns save-btn">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Existing Medical Form Modal -->
+    <div class="ex-medical-form modal" id="ex_modal">
+        <div class="data-form">
+            <div class="form-header">
+                <div class="header-text">Update Medical</div>
+                <button class="close-btn" id="closeExModal">×</button>
+            </div>
+
+            <form id="exMedicalForm" class="batch-form">
+                <input type="hidden" id="edit-id">
+
+                <label for="exmedicalName">Name</label>
+                <input type="text" id="exmedicalName" name="medicalName" required>
+
+                <label for="exlocality">Locality</label>
+                <input type="text" id="exlocality" name="locality" required>
+
+                <label for="exvisibility">Visibility</label>
+                <input type="checkbox" class="visis" id="exvisi" name="visibility">
+
+                <div class="form-actions">
+                    <button type="submit" id="ex-saveBtn" class="btns save-btn">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="static/JS/medical_entry.js"></script>
+</body>
+
+</html>

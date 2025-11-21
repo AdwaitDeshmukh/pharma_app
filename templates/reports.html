@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Reports - Pharmacy System</title>
+    <link rel="stylesheet" href="static/reports.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="{{ url_for('main.dashboard') }}" class="back-btn">
+                <img src="static/Images/Batch_Entry/back_btn.png" alt="Back">
+            </a>
+            <h1>Sales Reports</h1>
+        </div>
+
+        {% if report_data %}
+        <div class="reports-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Month & Year</th>
+                        <th>Entries</th>
+                        <th>Total Sales</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for report in report_data %}
+                    <tr data-month="{{ report.month }}" data-year="{{ report.year }}">
+                        <td>
+                            <strong>{{ report.month_name }} {{ report.year }}</strong>
+                        </td>
+                        <td>
+                            <span class="entry-count">{{ report.entry_count }} entries</span>
+                        </td>
+                        <td>
+                            <strong>₹{{ "%.2f"|format(report.total_sales) }}</strong>
+                        </td>
+                        <td class="action-buttons">
+                            <button class="btn btn-open open-month-btn" data-month="{{ report.month }}"
+                                data-year="{{ report.year }}">
+                                Open
+                            </button>
+                            <div class="export-dropdown">
+                                <button class="btn btn-download dropdown-toggle" type="button">
+                                    📥 Download
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item"
+                                        href="{{ url_for('sales_entry.export_sales') }}?month={{ report.month }}&year={{ report.year }}">
+                                        📝 Excel Format
+                                    </a>
+                                    <a class="dropdown-item"
+                                        href="{{ url_for('sales_entry.export_sales_pdf') }}?month={{ report.month }}&year={{ report.year }}">
+                                        📄 PDF Format
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="no-data">
+            <h3>No Sales Data Available</h3>
+            <p>Start by adding some sales entries in the Sales Entry page.</p>
+            <a href="{{ url_for('sales_entry.sales_entry') }}" class="btn btn-open" style="margin-top: 15px;">
+                Go to Sales Entry
+            </a>
+        </div>
+        {% endif %}
+
+        <!-- Filter Section (Hidden by default) -->
+        <div class="filter-section" id="filterSection">
+            <h3>Filter Monthly Data</h3>
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label for="filterStockist">Stockist</label>
+                    <select id="filterStockist">
+                        <option value="">All Stockists</option>
+                        <!-- Will be populated dynamically -->
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filterMedical">Medical</label>
+                    <select id="filterMedical">
+                        <option value="">All Medicals</option>
+                        <!-- Will be populated dynamically -->
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filterDoctor">Doctor</label>
+                    <select id="filterDoctor">
+                        <option value="">All Doctors</option>
+                        <!-- Will be populated dynamically -->
+                    </select>
+                </div>
+            </div>
+            <div class="filter-actions">
+                <button class="btn btn-primary" onclick="applyFilters()">
+                    Apply Filters
+                </button>
+                <button class="btn btn-secondary" onclick="clearFilters()">
+                    Clear Filters
+                </button>
+                <button class="btn btn-success" onclick="exportFilteredData()" id="exportFilteredBtn">
+                    Export Filtered Data
+                </button>
+            </div>
+        </div>
+
+        <!-- Active Filters Display -->
+        <div class="active-filters" id="activeFilters" style="display: none;">
+            <h4>Active Filters:</h4>
+        </div>
+
+        <!-- Sales Details Section -->
+        <div class="sales-details" id="salesDetails">
+            <div class="sales-details-header">
+                <h2 id="detailsTitle">Sales Details</h2>
+                <button class="btn btn-secondary" onclick="closeSalesDetails()">Close</button>
+            </div>
+
+            <div class="summary-cards" id="summaryCards">
+                <!-- Summary cards will be populated here -->
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <h3 id="tableSubtitle">Monthly Sales Entries</h3>
+                    <div class="export-dropdown">
+                        <button class="btn btn-warning dropdown-toggle" type="button" id="exportCurrentDropdown">
+                            📊 Export Current View
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="exportCurrentDropdown">
+                            <a class="dropdown-item" href="#" onclick="exportCurrentView('excel')">
+                                📝 Excel Format
+                            </a>
+                            <a class="dropdown-item" href="#" onclick="exportCurrentView('pdf')">
+                                📄 PDF Format
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <table class="monthly-sales-table" id="monthSalesTable">
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Stockist</th>
+                            <th>Medical</th>
+                            <th>Doctor</th>
+                            <th>Batch No</th>
+                            <th>Medicine</th>
+                            <th>Rate (₹)</th>
+                            <th>Qty</th>
+                            <th>Free</th>
+                            <th>Total (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="monthSalesTableBody">
+                        <!-- Sales data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="static/JS/reports.js"></script>
+</body>
+
+</html>

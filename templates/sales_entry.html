@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pharmacy Sales Entry System</title>
+    <link rel="stylesheet" href="static/sales_entry.css">
+    <style>
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .centered-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .close {
+            font-size: 24px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #666;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: flex-end;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="heading">
+            <a href="{{ url_for('main.dashboard') }}" class="back-btn" aria-label="Go back">
+                <img src="static/Images/Batch_Entry/back_btn.png" alt="Back">
+            </a>
+            <h1>Pharmacy Sales Entry System</h1>
+            <div class="date-display" id="currentDate"></div>
+        </header>
+        <div class="form-section">
+
+            <div class="month_selector">
+                <label for="monthSelect">Month:</label>
+                <select id="monthSelect" name="month" class="date_option">
+                    {% for i in range(1,13) %}
+                    <option value="{{ i }}" {% if current_month==i %}selected{% endif %}>
+                        {{ months[i] }}
+                    </option>
+                    {% endfor %}
+                </select>
+
+                <label for="yearSelect">Year:</label>
+                <select id="yearSelect" name="year" class="date_option" size="1">
+                    {% for y in range(2020, 2040) %}
+                    <option value="{{ y }}" {% if current_year==y %}selected{% endif %}>{{ y }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <h2>New Sale Entry</h2>
+            <form id="salesForm" action="{{ url_for('sales_entry.sales_entry') }}" method="POST">
+                <div class="form-grid">
+                    <!-- Company Dropdown -->
+                    <div class="form-group">
+                        <label for="company">Company</label>
+                        <select id="company" name="company">
+                            <option value="">-- Select Company --</option>
+                            {% for company in companies %}
+                            <option value="{{ company.id }}">{{ company.company_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="stockist">Stockist</label>
+                        <select id="stockist" name="stockist" required>
+                            <option value="">Select Stockist</option>
+                            {% for stockist in stockists %}
+                            <option value="{{ stockist.id }}">{{ stockist.stockist }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="medical">Medical</label>
+                        <select id="medical" name="medical" required>
+                            <option value="">-- Select Medical --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="doctor">Doctor</label>
+                        <select id="doctor" name="doctor">
+                            <option value="">Select Doctor</option>
+                        </select>
+                    </div>
+
+                    <input type="hidden" id="batch_id_input" name="batch_id">
+
+                    <div class="form-group">
+                        <label for="batchNumber">Medicine Batch Number</label>
+                        <input type="text" id="batchNumber" name="batchNumber" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="batch_id">Medicine Name</label>
+                        <select id="batch_id" name="batch_id" class="form-control" required>
+                            <option value="">-- Select Medicine --</option>
+                            {% for data in batch_data %}
+                            <option value="{{ data.id }}">{{ data.medicine_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="medicineRate">Rate (₹)</label>
+                        <input type="number" id="medicineRate" name="medicineRate" step="0.01" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quantity">Quantity</label>
+                        <input type="number" id="quantity" name="quantity" min="1" value="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="free">Free</label>
+                        <input type="number" id="free" name="free" min="0" value="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="totalCost">Total Cost (₹)</label>
+                        <input type="number" id="totalCost" name="totalCost" step="0.01" readonly>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Item</button>
+            </form>
+        </div>
+
+        <div class="sales-table">
+            <h2>Current Sale</h2>
+            <table id="salesTable">
+                <thead>
+                    <tr>
+                        <th>Company</th>
+                        <th>Stockist</th>
+                        <th>Medical</th>
+                        <th>Doctor</th>
+                        <th>Batch No</th>
+                        <th>Medicine</th>
+                        <th>Rate</th>
+                        <th>Qty</th>
+                        <th>Free</th>
+                        <th>Total Amount</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in sales_entries %}
+                    <tr data-id="{{ entry.id }}">
+                        <td>{{ entry.company_name}}</td>
+                        <td>{{ entry.stockist_name }}</td>
+                        <td>{{ entry.medical_name }}</td>
+                        <td>{{ entry.doctor_name }}</td>
+                        <td>{{ entry.batch_no }}</td>
+                        <td>{{ entry.medicine_name }}</td>
+                        <td>₹{{ "%.2f"|format(entry.rate) }}</td>
+                        <td>{{ entry.quantity }}</td>
+                        <td>{{ entry.free }}</td>
+                        <td>₹{{ "%.2f"|format(entry.totalCost) }}</td>
+                        <td>
+                            <button class="edit-btn btns" data-id="{{ entry.id }}">Update</button>
+                            <button class="del-btn btns">Delete</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="summary">
+                <div class="summary-item total">
+                    <span>Grand Total:</span>
+                    <span id="grandTotal">₹{{ "%.2f"|format(grand_total) }}</span>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <div class="export-dropdown">
+                    <button class="btn btn-success dropdown-toggle" type="button" id="exportDropdown">
+                        📊 Export Current
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="exportDropdown">
+                        <a class="dropdown-item" href="#" onclick="exportSalesData('excel')">
+                            📝 Excel Format
+                        </a>
+                        <a class="dropdown-item" href="#" onclick="exportSalesData('pdf')">
+                            📄 PDF Format
+                        </a>
+                    </div>
+                </div>
+                <a href="{{ url_for('sales_entry.reports') }}" class="btn btn-info reports">View Reports</a>
+                <form action="{{ url_for('sales_entry.clear_sales') }}" method="POST" style="display:inline;">
+                    <button type="submit" id="clearSales" class="btn btn-danger"
+                        onclick="return confirm('Are you sure? This will delete all sales of this month.')">
+                        Clear Sale
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="overlay" id="editOverlay" style="display: none;">
+        <div class="centered-box">
+            <div class="modal-header">
+                <h2>Update Sales Entry</h2>
+                <button class="close" id="closeEditModal">&times;</button>
+            </div>
+            <form id="editSalesForm">
+                <input type="hidden" id="editEntryId" name="entryId">
+
+                <div class="form-grid">
+                    <!-- Company Dropdown for Edit Modal -->
+                    <div class="form-group">
+                        <label for="editCompany">Company</label>
+                        <select id="editCompany" name="company">
+                            <option value="">-- Select Company --</option>
+                            {% for company in companies %}
+                            <option value="{{ company.id }}">{{ company.company_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editStockist">Stockist</label>
+                        <select id="editStockist" name="stockist" required>
+                            <option value="">Select Stockist</option>
+                            {% for stockist in stockists %}
+                            <option value="{{ stockist.id }}">{{ stockist.stockist }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editMedical">Medical</label>
+                        <select id="editMedical" name="medical" required>
+                            <option value="">-- Select Medical --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editDoctor">Doctor</label>
+                        <select id="editDoctor" name="doctor">
+                            <option value="">Select Doctor</option>
+                        </select>
+                    </div>
+
+                    <input type="hidden" id="editBatchIdInput" name="batch_id">
+
+                    <div class="form-group">
+                        <label for="editBatchNumber">Medicine Batch Number</label>
+                        <input type="text" id="editBatchNumber" name="batchNumber" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editBatchId">Medicine Name</label>
+                        <select id="editBatchId" name="batch_id" class="form-control" required>
+                            <option value="">-- Select Medicine --</option>
+                            {% for data in batch_data %}
+                            <option value="{{ data.id }}">{{ data.medicine_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editMedicineRate">Rate (₹)</label>
+                        <input type="number" id="editMedicineRate" name="medicineRate" step="0.01" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editQuantity">Quantity</label>
+                        <input type="number" id="editQuantity" name="quantity" min="1" value="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editFree">Free</label>
+                        <input type="number" id="editFree" name="free" min="0" value="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editTotalCost">Total Cost (₹)</label>
+                        <input type="number" id="editTotalCost" name="totalCost" step="0.01" readonly>
+                    </div>
+                </div>
+                <div class="modal-buttons">
+                    <button type="submit" class="btn btn-primary">Update Item</button>
+                    <button type="button" class="btn btn-secondary" id="cancelEdit">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="static/JS/sales_entry.js"></script>
+</body>
+
+</html>

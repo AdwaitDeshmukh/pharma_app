@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batch Entry</title>
+    <link rel="stylesheet" href="static/batch_entry.css">
+</head>
+<body>
+    <header class="header">
+        <a href="{{ url_for('main.master_entry') }}" class="back-btn" aria-label="Go back">
+            <img src="static/Images/Batch_Entry/back_btn.png" alt="Back">
+        </a>
+    </header>
+
+    <div class="container">
+        <div class="btn-holder">
+            <button type="button" class="btns new-batch-btn" id="new-btn">New Batch</button>
+        </div>
+        <div class="data-table">
+            <h3 id="table-heading">Existing Batchs:</h3>
+            <table border="1" class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Batch Number</th>
+                        <th>Medicine Name</th>
+                        <th>Manufacturing Date</th>
+                        <th>Expiry Date</th>
+                        <th>Cost Per Unit</th>
+                        <th>Visibility</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="values">
+                    {% for row in data %}
+                        <tr data-id="{{ row.id }}">
+                            <td>{{ row.id }}</td>
+                            <td class="batchNo">{{ row.batch_no }}</td>
+                            <td class="medicineName">{{ row.medicine_name }}</td>
+                            <td class="mfgDate">{{ row.manfacturing_date }}</td>
+                            <td class="expDate">{{ row.expiry_date }}</td>
+                            <td class="cost">{{ row.cost }}</td>
+                            <td class="visibility">{{ row.visibility }}</td>
+                            <td>
+                                <button class="btns btn-sm btn-info edit-btn">Update</button>
+                                <button class="btns btn-sm btn-danger del-btn">Delete</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- New Batch Form -->
+    <div class="new-batch-form modal" id="new_modal">
+        <div class="data-form">
+            <div class="form-header">
+                <div class="header-text">Add New Batch Details</div>
+                <button class="close-btn" id="closeModal">×</button>
+            </div>
+
+            <form id="batchForm" class="batch-form">
+                <label for="batchNo">Batch No</label>
+                <input type="text" id="batchNo" name="batchNo" required>
+
+                <label for="medicineName">Medicine Name</label>
+                <input type="text" id="medicineName" name="medicineName" required>
+
+                <label for="mfgDate">Manufacturing Date</label>
+                <input type="date" id="mfgDate" name="mfgDate" required>
+
+                <label for="expDate">Expiry Date</label>
+                <input type="date" id="expDate" name="expDate" required>
+
+                <label for="cost">Cost per Unit</label>
+                <input type="number" id="cost" name="cost" step="0.01" required>
+                
+                <label for="visibility">Visibility</label>
+                <input type="checkbox" id="visi" name="visibility" step="0.01" required>
+
+                <div class="form-actions">
+                    <button type="submit" id="saveBtn" class="btns save-btn">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Existing Batch Form  -->
+
+    <div class="ex-batch-form modal" id="ex_modal">
+        <div class="data-form">
+            <div class="form-header">
+                <div class="header-text">Add New Batch Details</div>
+                <button class="close-btn" id="closeModal">×</button>
+            </div>
+
+            <form id="batchForm" class="batch-form">
+
+                <input type="hidden" id="edit-id">
+                
+                <label for="batchNo">Batch No</label>
+                <input type="text" id="exbatchNo" name="batchNo" required>
+
+                <label for="medicineName">Medicine Name</label>
+                <input type="text" id="exmedicineName" name="medicineName" required>
+
+                <label for="mfgDate">Manufacturing Date</label>
+                <input type="date" id="exmfgDate" name="mfgDate" required>
+
+                <label for="expDate">Expiry Date</label>
+                <input type="date" id="ex-expDate" name="expDate" required>
+
+                <label for="cost">Cost per Unit</label>
+                <input type="number" id="excost" name="cost" step="0.01" required>
+                
+                <label for="visibility">Visibility</label>
+                <input type="checkbox" id="exvisi" name="visibility" step="0.01" >
+
+                <div class="form-actions">
+                    <button type="submit" id="ex-saveBtn" class="btns save-btn">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="static/JS/batch_entry.js"></script>
+</body>
+</html>

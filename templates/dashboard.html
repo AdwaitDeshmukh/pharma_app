@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="static/dashboard.css">
+</head>
+
+<body>
+    <div class="topbanner">
+        <div id="yearbox">
+            {{date}}
+        </div>
+        <div class="tpbtext">
+            <div id="welcometxt">
+                PRABHA AGENCIES
+            </div>
+
+            <div id="subtext">
+                Prabha Agencies Manik Apartment, Amravati-444601, Maharashtra, India
+            </div>
+        </div>
+        <img src="static/Images/Dashboard/Dashimg.png" alt="Dashboard Image">
+    </div>
+    <div class="btnbanner">
+
+        <a href="{{ url_for('master_entry') }}" class="btnbox">
+            <div class="icon">
+                <img class="btn-icon" src="static/Images/Dashboard/master-entry.png" alt="master-entry-icon">
+            </div>
+            <div class="btnmaintxt">
+                Master Entry
+            </div>
+            <div class="btnsubtxt">
+                Enter details for each Master
+            </div>
+        </a>
+
+        <a href="#" class="btnbox">
+            <div class="icon">
+                <img class="btn-icon" src="static/Images/Dashboard/sales-entry.png" alt="master-entry-icon">
+            </div>
+            <div class="btnmaintxt">
+                Sales Entry
+            </div>
+            <div class="btnsubtxt">
+                Enter your sales
+            </div>
+        </a>
+
+        <a href="#" class="btnbox">
+            <div class="icon">
+                <img class="btn-icon" src="static/Images/Dashboard/report.png" alt="master-entry-icon">
+            </div>
+            <div class="btnmaintxt">
+                Report
+            </div>
+            <div class="btnsubtxt">
+                Get a monthly earning report
+            </div>
+        </a>
+
+    </div>
+</body>
+
+</html>

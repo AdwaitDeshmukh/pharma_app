@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stockist Entry</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='stockist_entry.css') }}">
+</head>
+
+<body>
+  <header class="header">
+    <a href="{{ url_for('main.master_entry') }}" class="back-btn" aria-label="Go back">
+      <img src="{{ url_for('static', filename='Images/Batch_Entry/back_btn.png') }}" alt="Back">
+    </a>
+  </header>
+
+  <div class="container">
+    <div class="btn-holder">
+      <button type="button" class="btns new-stockist-btn" id="new-btn">New Stockist</button>
+    </div>
+    <div class="data-table">
+      <h3 id="table-heading">Existing Stockists:</h3>
+      <table border="1" class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Stockist Name</th>
+            <th>Medicals</th>
+            <th>Visibility</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in data %}
+          <tr>
+            <td>{{ row.id }}</td>
+            <td>{{ row.stockist }}</td>
+            <td>{{ row.medicals | map(attribute='medicalName') | join(', ') }}</td>
+            <td>{{ "Yes" if row.visibility else "No" }}</td>
+            <td>
+              <button class="btns edit-btn" data-id="{{ row.id }}">Edit</button>
+              <button class="btns del-btn" data-id="{{ row.id }}">Delete</button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="modal" id="stockist_modal" style="display:none;">
+    <div class="data-form">
+      <div class="form-header">
+        <div class="header-text" id="modal-title">Add New Stockist</div>
+        <button class="close-btn" id="closeModal">×</button>
+      </div>
+
+      <form method="post" id="stockistForm">
+        <input type="hidden" id="stockist-id" name="id">
+        <label>Stockist:</label>
+        <div class="company-dropdown">
+          <input type="text" name="stockist" id="company" class="company-input" placeholder="Type or select company">
+        </div>
+        <br><br>
+
+        <label>Medical:</label>
+        <div class="dropdown" id="owner-dropdown">
+          <div class="dropdown-btn" id="owner-btn" onclick="toggleDropdown('owner-dropdown')">
+            Select Owners
+          </div>
+          <div class="dropdown-content">
+            {% for owner in owners %}
+            <label>
+              <input type="checkbox" name="medicals" value="{{ owner.id }}">
+              {{ owner.medicalName }}
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+        <br><br>
+
+        <label for="visi">Visibility</label>
+        <input type="checkbox" id="visi" name="visibility">
+
+        <div class="form-actions">
+          <button type="submit" id="saveBtn" class="btns save-btn">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const modal = document.getElementById("stockist_modal");
+      const newBtn = document.getElementById("new-btn");
+      const closeBtn = document.getElementById("closeModal");
+      const modalTitle = document.getElementById("modal-title");
+      const form = document.getElementById("stockistForm");
+      const stockistIdInput = document.getElementById("stockist-id");
+      const companyInput = document.getElementById("company");
+      const ownerCheckboxes = document.querySelectorAll('input[name="medicals"]');
+      const visibilityCheckbox = document.getElementById("visi");
+
+      // --- Open/Close Modal ---
+      newBtn.addEventListener("click", () => {
+        modalTitle.textContent = "Add New Stockist";
+        form.reset();
+        stockistIdInput.value = '';
+        modal.style.display = "block";
+      });
+
+      closeBtn.addEventListener("click", () => {
+        modal.style.display = "none";
+        form.reset();
+      });
+
+      window.onclick = function (event) {
+        if (event.target === modal) {
+          modal.style.display = "none";
+          form.reset();
+        }
+      };
+
+      // --- Edit Buttons ---
+      document.querySelectorAll(".edit-btn").forEach(button => {
+        button.addEventListener("click", async () => {
+          const id = button.getAttribute("data-id");
+          try {
+            const res = await fetch(`/get_stockist/${id}`);
+            if (!res.ok) throw new Error("Stockist not found");
+            const data = await res.json();
+
+            modalTitle.textContent = "Edit Stockist";
+            stockistIdInput.value = data.id;
+            companyInput.value = data.stockist;
+
+            // Reset all checkboxes first
+            ownerCheckboxes.forEach(cb => cb.checked = false);
+            // Check the ones that are in the data
+            data.medicals.forEach(med => {
+              const checkbox = document.querySelector(`input[name="medicals"][value="${med.id}"]`);
+              if (checkbox) {
+                checkbox.checked = true;
+              }
+            });
+
+            visibilityCheckbox.checked = data.visibility;
+            modal.style.display = "block";
+          } catch (error) {
+            console.error("Error fetching stockist data:", error);
+            alert("Could not load stockist data for editing.");
+          }
+        });
+      });
+
+      // --- Delete Buttons ---
+      document.querySelectorAll(".del-btn").forEach(button => {
+        button.addEventListener("click", async () => {
+          const id = button.getAttribute("data-id");
+          if (confirm("Are you sure you want to delete this stockist?")) {
+            try {
+              const res = await fetch("/delete_stockist", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id }),
+              });
+              const data = await res.json();
+              if (data.status === "success") {
+                alert("Deleted successfully!");
+                location.reload();
+              } else {
+                alert("Error deleting stockist: " + data.message);
+              }
+            } catch (error) {
+              console.error("Error during deletion:", error);
+              alert("An error occurred. Please try again.");
+            }
+          }
+        });
+      });
+
+      // --- Form Submission ---
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const medicals = Array.from(ownerCheckboxes)
+          .filter(cb => cb.checked)
+          .map(cb => parseInt(cb.value));
+
+        const payload = {
+          id: stockistIdInput.value || null,
+          stockist: companyInput.value,
+          medicals: medicals,
+          visibility: visibilityCheckbox.checked,
+        };
+
+        try {
+          const res = await fetch("/add_stockist", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          const data = await res.json();
+
+          if (data.status === "success") {
+            alert("Stockist saved successfully!");
+            location.reload();
+          } else {
+            alert("Error saving stockist: " + data.message);
+          }
+        } catch (err) {
+          console.error("Error:", err);
+          alert("An error occurred. Please try again.");
+        }
+      });
+    });
+
+    // --- Global functions for HTML events ---
+    function toggleCompanyDropdown() {
+      document.getElementById("company-options").classList.toggle("show");
+    }
+
+    function selectCompany(name) {
+      document.getElementById("company").value = name;
+      document.getElementById("company-options").classList.remove("show");
+    }
+
+    function filterCompanies() {
+      let input = document.getElementById("company").value.toLowerCase();
+      let items = document.querySelectorAll("#company-options div");
+      items.forEach(item => {
+        item.style.display = item.textContent.toLowerCase().includes(input) ? "block" : "none";
+      });
+      document.getElementById("company-options").classList.add("show");
+    }
+
+    function toggleDropdown(id) {
+      document.getElementById(id).classList.toggle("show");
+    }
+
+    window.onclick = function (event) {
+      if (!event.target.matches('.company-input')) {
+        const dropdowns = document.getElementsByClassName("company-options");
+        for (let i = 0; i < dropdowns.length; i++) {
+          const openDropdown = dropdowns[i];
+          if (openDropdown.classList.contains('show')) {
+            openDropdown.classList.remove('show');
+          }
+        }
+      }
+      if (!event.target.closest('.dropdown')) {
+        const ownerDropdown = document.getElementById("owner-dropdown");
+        if (ownerDropdown.classList.contains('show')) {
+          ownerDropdown.classList.remove('show');
+        }
+      }
+    }
+  </script>
+</body>
+
+</html>
